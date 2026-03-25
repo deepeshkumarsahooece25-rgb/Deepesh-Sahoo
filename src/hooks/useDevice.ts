@@ -41,6 +41,8 @@ export function useDevice() {
         setDevice(snap.data() as DeviceStatus);
       }
       setLoading(false);
+    }, (error) => {
+      console.error("useDevice onSnapshot error:", error);
     });
 
     return unsubscribe;

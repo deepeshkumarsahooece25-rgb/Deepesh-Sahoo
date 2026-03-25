@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { auth, db } from "@/src/firebase";
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, updateProfile } from "firebase/auth";
 import { doc, getDoc, setDoc } from "firebase/firestore";
 
 export function useAuth() {
@@ -29,16 +29,29 @@ export function useAuth() {
     return unsubscribe;
   }, []);
 
-  const login = async () => {
-    const provider = new GoogleAuthProvider();
+  const loginWithDevice = async (deviceId: string, password: string, name?: string) => {
+    // We use the device ID to create a unique pseudo-email for Firebase Auth
+    const email = `${deviceId.replace(/[^a-zA-Z0-9]/g, '')}@smartbaby.local`;
     try {
-      await signInWithPopup(auth, provider);
-    } catch (error) {
-      console.error("Login failed", error);
+      // Try to sign in first
+      await signInWithEmailAndPassword(auth, email, password);
+    } catch (error: any) {
+      // If sign in fails, try to create the account
+      try {
+        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+        if (name) {
+          await updateProfile(userCredential.user, { displayName: name });
+        }
+      } catch (createError: any) {
+        if (createError.code === 'auth/email-already-in-use') {
+          throw new Error("Incorrect password for this device.");
+        }
+        throw createError;
+      }
     }
   };
 
   const logout = () => signOut(auth);
 
-  return { user, loading, login, logout };
+  return { user, loading, loginWithDevice, logout };
 }

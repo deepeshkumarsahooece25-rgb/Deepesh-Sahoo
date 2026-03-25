@@ -84,8 +84,8 @@ service cloud.firestore {
     }
 
     match /devices/{deviceId} {
-      allow read: if isAuthenticated() && resource.data.userId == request.auth.uid;
-      allow create: if isAuthenticated() && isValidDevice(request.resource.data) && request.resource.data.userId == request.auth.uid;
+      allow read: if isAuthenticated() && deviceId == request.auth.uid;
+      allow create: if isAuthenticated() && isValidDevice(request.resource.data) && request.resource.data.userId == request.auth.uid && deviceId == request.auth.uid;
       allow update: if isAuthenticated() && isValidDevice(request.resource.data) && resource.data.userId == request.auth.uid && userIdNotModified();
       allow delete: if isAuthenticated() && resource.data.userId == request.auth.uid;
     }

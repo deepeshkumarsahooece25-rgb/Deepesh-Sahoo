@@ -44,6 +44,8 @@ export default function SleepMonitor() {
         setLogs(data);
       }
       setLoading(false);
+    }, (error) => {
+      console.error("SleepMonitor onSnapshot error:", error);
     });
 
     return unsubscribe;

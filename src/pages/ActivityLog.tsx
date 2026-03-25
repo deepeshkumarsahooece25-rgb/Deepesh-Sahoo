@@ -51,6 +51,8 @@ export default function ActivityLogPage() {
       const data = snap.docs.map(doc => ({ id: doc.id, ...doc.data() } as ActivityLog));
       setActivities(data);
       setLoading(false);
+    }, (error) => {
+      console.error("ActivityLog onSnapshot error:", error);
     });
 
     return unsubscribe;
