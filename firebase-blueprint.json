@@ -1,0 +1,76 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Parent profile information",
+      "type": "object",
+      "properties": {
+        "uid": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["parent", "admin"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["uid", "name", "email", "role", "createdAt"]
+    },
+    "DeviceStatus": {
+      "title": "Device Status",
+      "description": "ESP32 Swing Device Status",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "temperature": { "type": "number" },
+        "moisture": { "type": "number" },
+        "swingSpeed": { "type": "string", "enum": ["off", "slow", "medium", "fast"] },
+        "isAutoSwing": { "type": "boolean" },
+        "isNightMode": { "type": "boolean" },
+        "currentLullaby": { "type": "string" },
+        "updatedAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["userId", "temperature", "moisture", "swingSpeed", "isAutoSwing", "isNightMode", "updatedAt"]
+    },
+    "ActivityLog": {
+      "title": "Activity Log",
+      "description": "Baby activity tracking",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "type": { "type": "string", "enum": ["feeding", "crying", "sleep", "diaper", "health"] },
+        "timestamp": { "type": "string", "format": "date-time" },
+        "notes": { "type": "string" },
+        "durationMinutes": { "type": "number" }
+      },
+      "required": ["userId", "type", "timestamp"]
+    },
+    "SleepLog": {
+      "title": "Sleep Log",
+      "description": "Daily sleep analysis",
+      "type": "object",
+      "properties": {
+        "userId": { "type": "string" },
+        "date": { "type": "string", "format": "date" },
+        "lightSleepMinutes": { "type": "number" },
+        "deepSleepMinutes": { "type": "number" }
+      },
+      "required": ["userId", "date", "lightSleepMinutes", "deepSleepMinutes"]
+    }
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Parent profiles"
+    },
+    "/devices/{deviceId}": {
+      "schema": { "$ref": "#/entities/DeviceStatus" },
+      "description": "Device status for the baby swing"
+    },
+    "/activities/{activityId}": {
+      "schema": { "$ref": "#/entities/ActivityLog" },
+      "description": "Activity logs for the baby"
+    },
+    "/sleep_logs/{logId}": {
+      "schema": { "$ref": "#/entities/SleepLog" },
+      "description": "Sleep analysis logs"
+    }
+  }
+}
